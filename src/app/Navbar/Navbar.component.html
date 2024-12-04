@@ -1,0 +1,13 @@
+<nav>
+  <div class="flex justify-between items-center px-8 py-5 bg-gray-800 text-white">
+    <div>
+      <h1 class="text-3xl font-bold cursor-pointer"><a (click)="navigateTo('/home')">Order & Product</a></h1>
+    </div>
+    <ul class="flex gap-5">
+      <li class="cursor-pointer font-medium"><a (click)="navigateTo('/home')">Product</a></li>
+      <li class="cursor-pointer font-medium">
+        <a (click)="navigateTo('/order')">Order</a>
+      </li>
+    </ul>
+  </div>
+</nav>

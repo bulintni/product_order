@@ -1,0 +1,106 @@
+<div class="text-black">
+  <div class="flex items-center justify-between">
+    <div class="text-5xl my-7 font-bold ml-[190px] text-center">Order Detail</div>
+    <div class="flex flex-col items-end mr-[190px] my-4 justify-between">
+      <form action="" class="flex items-end" (ngSubmit)="applyFilter()">
+        <div class="">
+          <label for="" class="block text-start">ค้นหาข้อมูล</label>
+          <input
+            type="text"
+            id="searchInput"
+            [(ngModel)]="searchQuery"
+            name="searchQuery"
+            class="border-2 w-[400px] h-9 mr-4"
+          />
+        </div>
+        <button type="submit" class="border-2 rounded-md px-4 py-1">
+          Search
+        </button>
+      </form>
+    </div>
+  </div>
+  <div class="mat-elevation-z8 border-2 max-w-[80%] mx-auto flex flex-col">
+    <table mat-table [dataSource]="dataSource">
+      <!-- ID Column -->
+      <ng-container matColumnDef="OrderDate">
+        <th mat-header-cell *matHeaderCellDef class="border-[1px] border-black">OrderDate</th>
+        <td mat-cell *matCellDef="let element" class="border-[1px] border-black">{{ element.OrderDate }}</td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="CustomerID">
+        <th mat-header-cell *matHeaderCellDef class="border-[1px] border-black">CustomerID</th>
+        <td mat-cell *matCellDef="let element" class="border-[1px] border-black">
+          {{ element.CustomerID }}
+        </td>
+      </ng-container>
+
+      <!-- Age Column -->
+      <ng-container matColumnDef="ProductName">
+        <th mat-header-cell *matHeaderCellDef class="border-[1px] border-black">ProductName</th>
+        <td mat-cell *matCellDef="let element" class="border-[1px] border-black">{{ element.ProductName }}</td>
+      </ng-container>
+
+      <!-- Age Column -->
+      <ng-container matColumnDef="UnitPrice">
+        <th mat-header-cell *matHeaderCellDef class="border-[1px] border-black">UnitPrice</th>
+        <td mat-cell *matCellDef="let element" class="border-[1px] border-black">{{ element.UnitPrice }} $</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <mat-paginator
+      [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 20]"
+      showFirstLastButtons
+      class="border-[1px] border-gray-700"
+    ></mat-paginator>
+  </div>
+
+  <!-- สรุปยอดขาย -->
+  <div class="w-[30%] border-2 ml-[190px] mt-5">
+    <div class="flex justify-center items-start p-7 flex-col">
+      <div class="mb-4">
+        <h1 class="font-bold text-2xl">สรุปยอดขาย</h1>
+      </div>
+      <div class="flex flex-col " *ngIf="isVisible">
+        <p>{{headerSales}}</p>
+        <h3 class="text-3xl font-bold">{{ totalSales }}</h3>
+      </div>
+      <div class="flex flex-col justify-center gap-4">
+        <div class="flex flex-col gap-2">
+          <label for="dateInput">เลือกวันที่:</label>
+          <input
+            type="date"
+            id="dateInput"
+            [(ngModel)]="selectedDate"
+            class="border-2 w-[200px]"
+          />
+        </div>
+
+        <div class="flex gap-4">
+          <button
+            (click)="getSalesByDay()"
+            class="px-2 py-1 bg-green-400 rounded-md text-black"
+          >
+            ยอดขายรายวัน
+          </button>
+          <button
+            (click)="getSalesByMonth()"
+            class="px-2 py-1 bg-green-400 rounded-md text-black"
+          >
+            ยอดขายรายเดือน
+          </button>
+          <button
+            (click)="getSalesByYear()"
+            class="px-2 py-1 bg-green-400 rounded-md text-black"
+          >
+            ยอดขายรายปี
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
