@@ -1,6 +1,6 @@
-<div class="text-black">
-  <div class="flex items-center justify-between">
-    <div class="text-5xl my-7 font-bold ml-[190px] text-center">Order Detail</div>
+<div class="text-black flex flex-col justify-center items-start">
+  <div class="flex items-center justify-between w-full">
+    <div class="text-5xl my-7 font-bold ml-[190px] text-center">Order</div>
     <div class="flex flex-col items-end mr-[190px] my-4 justify-between">
       <form action="" class="flex items-end" (ngSubmit)="applyFilter()">
         <div class="">
@@ -19,58 +19,119 @@
       </form>
     </div>
   </div>
-  <div class="mat-elevation-z8 border-2 max-w-[80%] mx-auto flex flex-col">
-    <table mat-table [dataSource]="dataSource">
-      <!-- ID Column -->
-      <ng-container matColumnDef="OrderDate">
-        <th mat-header-cell *matHeaderCellDef class="border-[1px] border-black">OrderDate</th>
-        <td mat-cell *matCellDef="let element" class="border-[1px] border-black">{{ element.OrderDate }}</td>
-      </ng-container>
+  <div class="w-[100%] flex items-start justify-center gap-10">
+    <!-- ตาราง -->
+    <div class="mat-elevation-z8 w-[60%] border-2">
+      <table mat-table [dataSource]="dataSource">
+        <!-- ID Column -->
+        <ng-container matColumnDef="OrderDate">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="border-[1px] border-black w-[10%]"
+          >
+            OrderDate
+          </th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            class="border-[1px] border-black"
+          >
+            {{ element.OrderDate }}
+          </td>
+        </ng-container>
 
-      <!-- Name Column -->
-      <ng-container matColumnDef="CustomerID">
-        <th mat-header-cell *matHeaderCellDef class="border-[1px] border-black">CustomerID</th>
-        <td mat-cell *matCellDef="let element" class="border-[1px] border-black">
-          {{ element.CustomerID }}
-        </td>
-      </ng-container>
+        <!-- Name Column -->
+        <ng-container matColumnDef="CustomerID">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="border-[1px] border-black w-[10%]"
+          >
+            CustomerID
+          </th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            class="border-[1px] border-black"
+          >
+            {{ element.CustomerID }}
+          </td>
+        </ng-container>
 
-      <!-- Age Column -->
-      <ng-container matColumnDef="ProductName">
-        <th mat-header-cell *matHeaderCellDef class="border-[1px] border-black">ProductName</th>
-        <td mat-cell *matCellDef="let element" class="border-[1px] border-black">{{ element.ProductName }}</td>
-      </ng-container>
+        <!-- Age Column -->
+        <ng-container matColumnDef="ProductName">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="border-[1px] border-black"
+          >
+            ProductName
+          </th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            class="border-[1px] border-black"
+          >
+            {{ element.ProductName }}
+          </td>
+        </ng-container>
 
-      <!-- Age Column -->
-      <ng-container matColumnDef="UnitPrice">
-        <th mat-header-cell *matHeaderCellDef class="border-[1px] border-black">UnitPrice</th>
-        <td mat-cell *matCellDef="let element" class="border-[1px] border-black">{{ element.UnitPrice }} $</td>
-      </ng-container>
+        <!-- Age Column -->
+        <ng-container matColumnDef="UnitPrice">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="border-[1px] border-black w-[5%]"
+          >
+            UnitPrice
+          </th>
+          <td
+            mat-cell
+            *matCellDef="let element"
+            class="border-[1px] border-black"
+          >
+            {{ element.UnitPrice }} $
+          </td>
+        </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
 
-    <mat-paginator
-      [pageSize]="10"
-      [pageSizeOptions]="[5, 10, 20]"
-      showFirstLastButtons
-      class="border-[1px] border-gray-700"
-    ></mat-paginator>
-  </div>
+      <mat-paginator
+        [pageSize]="10"
+        [pageSizeOptions]="[5, 10, 20]"
+        showFirstLastButtons
+        class="border-[1px] border-gray-700"
+      ></mat-paginator>
+    </div>
+    <!-- ค้นหายอดรวม -->
+    <div class="flex w-[20%] p-6 border-2">
+      <div class="flex flex-col gap-2 w-[100%] p-6 items-center">
+        <h1 class="text-4xl">ค้นหายอดรวม</h1>
+        <div class="my-4">
+          <div *ngIf="isVisible">
+            <h1>{{ headerSales }}</h1>
+            <h1 class="text-4xl font-bold">{{ totalSales }}</h1>
+          </div>
+        </div>
 
-  <!-- สรุปยอดขาย -->
-  <div class="w-[30%] border-2 ml-[190px] mt-5">
-    <div class="flex justify-center items-start p-7 flex-col">
-      <div class="mb-4">
-        <h1 class="font-bold text-2xl">สรุปยอดขาย</h1>
-      </div>
-      <div class="flex flex-col " *ngIf="isVisible">
-        <p>{{headerSales}}</p>
-        <h3 class="text-3xl font-bold">{{ totalSales }}</h3>
-      </div>
-      <div class="flex flex-col justify-center gap-4">
         <div class="flex flex-col gap-2">
+          <label for="selectType">ประเภทการค้นหา:</label>
+          <select
+            [(ngModel)]="searchType"
+            (change)="onSearchTypeChange()"
+            class="border-2 w-[200px]"
+          >
+            <option value="day">ค้นหารายวัน</option>
+            <option value="monthYear">ค้นหารายเดือน</option>
+            <option value="year">ค้นหารายปี</option>
+          </select>
+        </div>
+
+        <!-- Input สำหรับค้นหารายวัน -->
+        <div *ngIf="searchType === 'day'" class="flex flex-col gap-2">
           <label for="dateInput">เลือกวันที่:</label>
           <input
             type="date"
@@ -80,26 +141,35 @@
           />
         </div>
 
-        <div class="flex gap-4">
-          <button
-            (click)="getSalesByDay()"
-            class="px-2 py-1 bg-green-400 rounded-md text-black"
-          >
-            ยอดขายรายวัน
-          </button>
-          <button
-            (click)="getSalesByMonth()"
-            class="px-2 py-1 bg-green-400 rounded-md text-black"
-          >
-            ยอดขายรายเดือน
-          </button>
-          <button
-            (click)="getSalesByYear()"
-            class="px-2 py-1 bg-green-400 rounded-md text-black"
-          >
-            ยอดขายรายปี
-          </button>
+        <!-- Input สำหรับค้นหารายเดือน -->
+        <div *ngIf="searchType === 'monthYear'" class="flex flex-col gap-2">
+          <label for="monthInput">เลือกเดือน:</label>
+          <input
+            type="month"
+            id="monthInput"
+            [(ngModel)]="selectedMonthYear"
+            class="border-2 w-[100%]"
+          />
         </div>
+
+        <!-- Input สำหรับค้นหารายปี -->
+        <div *ngIf="searchType === 'year'" class="flex flex-col gap-2">
+          <label for="yearInput">เลือกปี:</label>
+          <input
+            type="number"
+            id="yearInput"
+            [(ngModel)]="selectedYear"
+            class="border-2 w-[100%]"
+            placeholder="ป้อนปี (เช่น 2024)"
+          />
+        </div>
+
+        <button
+          (click)="submitSearch()"
+          class="mt-4 p-2 bg-blue-500 text-white w-[80%] rounded-md"
+        >
+          ค้นหา
+        </button>
       </div>
     </div>
   </div>

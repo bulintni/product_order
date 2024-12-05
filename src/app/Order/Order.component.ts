@@ -24,12 +24,17 @@ export class OrderComponent implements OnInit {
     'ProductName',
     'UnitPrice',
   ];
-  selectedDate: string = '';
+  // selectedDate: string = '';
   totalSales: number = 0;
   isVisible: boolean = false;
   headerSales: string = '';
   dataSource = new MatTableDataSource<any>(this.filteredDateData);
   searchQuery: string = '';
+
+  searchType: string = 'day'; // ค่าเริ่มต้นเป็น "รายวัน"
+  selectedDate: string | null = null; // ค่าวันที่
+  selectedMonthYear: string = '';
+  selectedYear: string | null = null; // ค่ารายปี
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
 
   constructor(private apiService: API_ServiceService) {}
@@ -73,76 +78,132 @@ export class OrderComponent implements OnInit {
     this.dataSource.filter = filterValue; // ใช้ filter ของ MatTableDataSource
   }
 
-  filterSalesByDate(rangeType: 'day' | 'month' | 'year', date: string) {
-    const targetDate = new Date(date);
+  // filterSalesByDate(rangeType: 'day' | 'month' | 'year', date: string) {
+  //   const targetDate = new Date(date);
+  //   console.log("Target Date : ", targetDate)
+  //   let filteredData: any[] = [];
+
+  //   if (rangeType === 'day') {
+  //     filteredData = this.data.filter((item: any) => {
+  //       const orderDate = new Date(item.OrderDate);
+  //       return (
+  //         orderDate.getDate() === targetDate.getDate() &&
+  //         orderDate.getMonth() === targetDate.getMonth() &&
+  //         orderDate.getFullYear() === targetDate.getFullYear()
+  //       );
+  //     });
+  //   } else if (rangeType === 'month') {
+  //     filteredData = this.data.filter((item: any) => {
+  //       const orderDate = new Date(item.OrderDate);
+  //       return (
+  //         orderDate.getMonth() === targetDate.getMonth() &&
+  //         orderDate.getFullYear() === targetDate.getFullYear()
+  //       );
+  //     });
+  //   } else if (rangeType === 'year') {
+  //     filteredData = this.data.filter((item: any) => {
+  //       const orderDate = new Date(item.OrderDate);
+  //       return orderDate.getFullYear() === targetDate.getFullYear();
+  //     });
+  //   }
+
+  //   // คำนวณยอดขายรวมของ UnitPrice
+  //   const totalSales = filteredData.reduce((sum: number, item: any) => {
+  //     return sum + item.UnitPrice * item.Quantity; // รวม UnitPrice * Quantity
+  //   }, 0);
+
+  //   console.log(`Filtered Data (${rangeType}):`, filteredData);
+  //   console.log(`Total Sales (${rangeType}):`, totalSales);
+
+  //   return { filteredData, totalSales };
+  // }
+
+  onSearchTypeChange(): void {
+    this.selectedDate = null;
+    this.selectedMonthYear = '';
+    this.selectedYear = null;
+  }
+
+  submitSearch(): void {
+    let payload: any;
+
+    switch (this.searchType) {
+      case 'day':
+        if (!this.selectedDate) {
+          alert('กรุณาเลือกวันที่!');
+          return;
+        }
+        this.filterAndCalculateTotal('day');
+        this.headerSales = "ยอดขายรวม : "
+        payload = { type: 'day', date: this.selectedDate };
+        break;
+
+      case 'monthYear':
+        if (!this.selectedMonthYear) {
+          alert('กรุณาเลือกเดือนและปี!');
+          return;
+        }
+        this.filterAndCalculateTotal('monthYear');
+        this.headerSales = "ยอดขายรวม : "
+        payload = { type: 'monthYear', monthYear: this.selectedMonthYear };
+        break;
+
+      case 'year':
+        if (!this.selectedYear) {
+          alert('กรุณาเลือกปี!');
+          return;
+        }
+        this.filterAndCalculateTotal('year');
+        this.headerSales = "ยอดขายรวม : "
+        payload = { type: 'year', year: this.selectedYear };
+        break;
+
+      default:
+        alert('กรุณาเลือกประเภทการค้นหา!');
+        return;
+    }
+    this.isVisible = true;
+
+    console.log('ส่งข้อมูล:', payload);
+    // เรียก API เพื่อประมวลผล payload
+    // this.searchSales(payload);
+  }
+
+  filterAndCalculateTotal(type: string): void {
     let filteredData: any[] = [];
 
-    if (rangeType === 'day') {
-      filteredData = this.data.filter((item: any) => {
+    if (type === 'day' && this.selectedDate) {
+      const selectedDate = new Date(this.selectedDate);
+      filteredData = this.filteredDateData.filter((item: any) => {
         const orderDate = new Date(item.OrderDate);
         return (
-          orderDate.getDate() === targetDate.getDate() &&
-          orderDate.getMonth() === targetDate.getMonth() &&
-          orderDate.getFullYear() === targetDate.getFullYear()
+          orderDate.getDate() === selectedDate.getDate() &&
+          orderDate.getMonth() === selectedDate.getMonth() &&
+          orderDate.getFullYear() === selectedDate.getFullYear()
         );
       });
-    } else if (rangeType === 'month') {
-      filteredData = this.data.filter((item: any) => {
+    } else if (type === 'monthYear' && this.selectedDate) {
+      const [year, month] = this.selectedMonthYear.split('-').map(Number);
+      filteredData = this.filteredDateData.filter((item: any) => {
         const orderDate = new Date(item.OrderDate);
         return (
-          orderDate.getMonth() === targetDate.getMonth() &&
-          orderDate.getFullYear() === targetDate.getFullYear()
+          orderDate.getFullYear() === year && orderDate.getMonth() === month - 1
         );
       });
-    } else if (rangeType === 'year') {
-      filteredData = this.data.filter((item: any) => {
+    } else if (type === 'year' && this.selectedYear) {
+      const year = parseInt(this.selectedYear, 10);
+      filteredData = this.filteredDateData.filter((item: any) => {
         const orderDate = new Date(item.OrderDate);
-        return orderDate.getFullYear() === targetDate.getFullYear();
+        return orderDate.getFullYear() === year;
       });
     }
 
-    // คำนวณยอดขายรวมของ UnitPrice
-    const totalSales = filteredData.reduce((sum: number, item: any) => {
-      return sum + item.UnitPrice * item.Quantity; // รวม UnitPrice * Quantity
+    this.totalSales = filteredData.reduce((sum: number, item: any) => {
+      return sum + item.UnitPrice;
     }, 0);
 
-    console.log(`Filtered Data (${rangeType}):`, filteredData);
-    console.log(`Total Sales (${rangeType}):`, totalSales);
-
-    return { filteredData, totalSales };
+    console.log(`Filtered Data (${type}):`, filteredData);
+    console.log(`Total Sales (${type}):`, this.totalSales);
   }
 
-  getSalesByDay() {
-    const result = this.filterSalesByDate('day', this.selectedDate);
-    this.totalSales = result.totalSales;
-    this.headerSales = 'ยอดขายประจำวัน';
-    console.log('selectedDate : ', this.selectedDate);
-    if (this.selectedDate === '') {
-      this.isVisible = false;
-    } else {
-      this.isVisible = true;
-    }
-  }
-
-  getSalesByMonth() {
-    const result = this.filterSalesByDate('month', this.selectedDate);
-    this.totalSales = result.totalSales;
-    this.headerSales = 'ยอดขายประจำเดือน';
-    if (this.selectedDate == '') {
-      this.isVisible = false;
-    } else {
-      this.isVisible = true;
-    }
-  }
-
-  getSalesByYear() {
-    const result = this.filterSalesByDate('year', this.selectedDate);
-    this.totalSales = result.totalSales;
-    this.headerSales = 'ยอดขายประจำปี';
-    if (this.searchQuery == '') {
-      this.isVisible = false;
-    } else {
-      this.isVisible = true;
-    }
-  }
 }
